@@ -11,8 +11,9 @@ import java.util.logging.Logger;
 public class ChatServer implements Runnable{
    private final String nomeUsuario;
    private Socket cliente;
-   private ServerSocket servidor;
-   private TelaServidor tela;
+   public ServerSocket servidor;
+   public TelaServidor tela;
+   public Map<String, Socket> mapClientes = new HashMap<>();
    
    public ChatServer(TelaServidor tela, String nomeUsuario){
       this.tela = tela;
