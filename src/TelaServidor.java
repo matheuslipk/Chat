@@ -1,3 +1,6 @@
+
+import java.util.Date;
+
 public class TelaServidor extends javax.swing.JFrame {
 
    private String usuario;
@@ -32,7 +35,7 @@ public class TelaServidor extends javax.swing.JFrame {
       jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
       jLabel1.setText("Servidor");
 
-      jLabel2.setText("Usuário");
+      jLabel2.setText("Seu nome");
 
       javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
       jPanel1.setLayout(jPanel1Layout);
@@ -172,25 +175,36 @@ public class TelaServidor extends javax.swing.JFrame {
    }//GEN-LAST:event_btnFecharServidorActionPerformed
 
    private void btnEnviarMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarMsgActionPerformed
-      String msg = tfMsg.getText();
-      msg = msg.trim();
-      if(msg.length()==0){
+      String texto = tfMsg.getText();
+      texto = texto.trim();
+      if(texto.length()==0){
          return;
       }
+      Mensagem msg = new Mensagem();
+      msg.setHora(new Date());
+      msg.setDestino("destino");
+      msg.setRemetente(usuario);
+      msg.setMsg(texto);
+      
       server.enviarMsg(msg);
       tfMsg.setText("");
    }//GEN-LAST:event_btnEnviarMsgActionPerformed
 
     private void tfMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfMsgKeyPressed
       if(evt.getKeyChar()=='\n'){
-         String msg = tfMsg.getText();
-         msg = msg.trim();
-         if(msg.length()==0){
+         String texto = tfMsg.getText();
+         texto = texto.trim();
+         if(texto.length()==0){
             return;
          }
+         Mensagem msg = new Mensagem();
+         msg.setHora(new Date());
+         msg.setDestino("destino");
+         msg.setRemetente(usuario);
+         msg.setMsg(texto);
          server.enviarMsg(msg);
          tfMsg.setText("");
-      }
+     }
     }//GEN-LAST:event_tfMsgKeyPressed
 
    

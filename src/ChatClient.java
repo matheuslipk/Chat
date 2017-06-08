@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class ChatClient implements Runnable{
    private String nomeUsuario;
    private Socket cliente;   
-   private String ip = "192.168.0.120";
+   private String ip = "192.168.0.195";
    private int porta = 80;
    private TelaCliente tela;
    
@@ -22,6 +22,10 @@ public class ChatClient implements Runnable{
       } catch (IOException ex) {
          System.out.println(ex.getMessage());
       }
+   }
+   
+   public String getIp(){
+      return this.cliente.getInetAddress().getHostAddress();
    }
    
    public ChatClient(String nomeUsuario){
@@ -41,10 +45,11 @@ public class ChatClient implements Runnable{
          
          while(true){
             ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-            String msg = (String)entrada.readObject();
+            Mensagem msg = (Mensagem)entrada.readObject();
             System.out.println(msg);
             if(this.tela!=null){
-               this.tela.taHistorico.setText(this.tela.taHistorico.getText()+msg+"\n");
+               this.tela.taHistorico.setText(this.tela.taHistorico.getText()+
+                       msg.getRemetente()+": "+msg.getMsg()+"\n");
             }
          }      
       }
@@ -54,14 +59,14 @@ public class ChatClient implements Runnable{
       }
    }
    
-   public void enviarMsg(String msg){
+   public void enviarMsg(Mensagem msg){
       ObjectOutputStream saida;
       try {
          saida = new ObjectOutputStream(cliente.getOutputStream());
          saida.flush();
-         saida.writeObject(nomeUsuario +": "+ msg);
+         saida.writeObject(msg);
          if(this.tela!=null){
-            this.tela.taHistorico.setText(this.tela.taHistorico.getText()+"Eu: "+msg+"\n");
+            this.tela.taHistorico.setText(this.tela.taHistorico.getText()+"Eu: "+msg.getMsg()+"\n");
          }
       } catch (IOException ex) {
          Logger.getLogger(ChatClient.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,7 +83,11 @@ public class ChatClient implements Runnable{
       
       while(true){
          System.out.println("Eu: ");
-         c.enviarMsg(ler.nextLine());
+         Mensagem msg = new Mensagem();
+         msg.setDestino(ler.next());
+         msg.setMsg(ler.nextLine());
+         msg.setRemetente(c.nomeUsuario);
+         c.enviarMsg(msg);
       }
    }
 }
