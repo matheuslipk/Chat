@@ -7,50 +7,51 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ChatClient implements Runnable{
-   String nomeUsuario;
-   TelaCliente t;
-   Socket cliente;
+   private String nomeUsuario;
+   private Socket cliente;   
+   private String ip = "192.168.0.120";
+   private int porta = 80;
+   private TelaCliente tela;
    
-   public ChatClient(TelaCliente t){
-      this.t = t;
+   public ChatClient(TelaCliente tela, String nomeUsuario){
+      this.tela = (TelaCliente)tela;
+      this.nomeUsuario = nomeUsuario;
       try {
-         this.cliente = new Socket("192.168.0.195", 21);
-         
+         this.cliente = new Socket(ip, porta);      
+         this.tela.jlInfo.setText("Conectado");
       } catch (IOException ex) {
-         return;
+         System.out.println(ex.getMessage());
       }
    }
    
    public ChatClient(String nomeUsuario){
       this.nomeUsuario = nomeUsuario;
       try {
-         this.cliente = new Socket("192.168.0.195", 21);
+         this.cliente = new Socket(ip, porta);      
+         System.out.println("Socket criado");
          
       } catch (IOException ex) {
-         return;
+         System.out.println(ex.getMessage());
       }
    }
 
    @Override
    public void run() {
       try {
-      System.out.println("Socket criado");
-      
-      while(true){
-         ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-         String msg = (String)entrada.readObject();
-         System.out.println(msg);
-         if(t!=null)t.taHistorico.setText(t.taHistorico.getText()+msg+"\n");
+         
+         while(true){
+            ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
+            String msg = (String)entrada.readObject();
+            System.out.println(msg);
+            if(this.tela!=null){
+               this.tela.taHistorico.setText(this.tela.taHistorico.getText()+msg+"\n");
+            }
+         }      
       }
       
-    }
-    catch(Exception e) {
-      System.out.println("Erro: " + e.getMessage());
-    }
-   }
-   
-   public void setNomeUsuario(String nome){
-      this.nomeUsuario = nome;
+      catch(IOException | ClassNotFoundException e) {
+         System.out.println("Erro: " + e.getMessage());
+      }
    }
    
    public void enviarMsg(String msg){
@@ -59,8 +60,9 @@ public class ChatClient implements Runnable{
          saida = new ObjectOutputStream(cliente.getOutputStream());
          saida.flush();
          saida.writeObject(nomeUsuario +": "+ msg);
-         if(t!=null)t.taHistorico.setText(t.taHistorico.getText()+"Eu: "+msg+"\n");
-         
+         if(this.tela!=null){
+            this.tela.taHistorico.setText(this.tela.taHistorico.getText()+"Eu: "+msg+"\n");
+         }
       } catch (IOException ex) {
          Logger.getLogger(ChatClient.class.getName()).log(Level.SEVERE, null, ex);
       }

@@ -23,8 +23,10 @@ public class TelaCliente extends javax.swing.JFrame {
       taHistorico = new javax.swing.JTextArea();
       tfMsg = new javax.swing.JTextField();
       btnEnviarMsg = new javax.swing.JButton();
+      jlInfo = new javax.swing.JLabel();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+      setResizable(false);
 
       jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
       jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -95,6 +97,11 @@ public class TelaCliente extends javax.swing.JFrame {
       jScrollPane1.setViewportView(taHistorico);
 
       tfMsg.setToolTipText("");
+      tfMsg.addKeyListener(new java.awt.event.KeyAdapter() {
+         public void keyPressed(java.awt.event.KeyEvent evt) {
+            tfMsgKeyPressed(evt);
+         }
+      });
 
       btnEnviarMsg.setText("Enviar");
       btnEnviarMsg.addActionListener(new java.awt.event.ActionListener() {
@@ -115,9 +122,10 @@ public class TelaCliente extends javax.swing.JFrame {
                .addComponent(jScrollPane1)
                .addGroup(layout.createSequentialGroup()
                   .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addGap(30, 30, 30)
+                  .addGap(16, 16, 16)
                   .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addGap(0, 59, Short.MAX_VALUE)))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                  .addComponent(jlInfo, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)))
             .addContainerGap())
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -128,10 +136,15 @@ public class TelaCliente extends javax.swing.JFrame {
          layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
-            .addGap(18, 18, 18)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-               .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-               .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addGroup(layout.createSequentialGroup()
+                  .addGap(18, 18, 18)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+               .addGroup(layout.createSequentialGroup()
+                  .addGap(47, 47, 47)
+                  .addComponent(jlInfo, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(18, 18, 18)
@@ -162,14 +175,29 @@ public class TelaCliente extends javax.swing.JFrame {
 
    private void btnEnviarMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarMsgActionPerformed
       String msg = tfMsg.getText();
+      msg = msg.trim();
+      if(msg.length()==0){
+         return;
+      }
       cliente.enviarMsg(msg);
       tfMsg.setText("");
    }//GEN-LAST:event_btnEnviarMsgActionPerformed
 
+   private void tfMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfMsgKeyPressed
+      if(evt.getKeyChar()=='\n'){
+         String msg = tfMsg.getText();
+         msg = msg.trim();
+         if(msg.length()==0){
+            return;
+         }
+         cliente.enviarMsg(msg);
+         tfMsg.setText("");
+     }
+   }//GEN-LAST:event_tfMsgKeyPressed
+
    
    private void conectaComOServidor(){
-      cliente = new ChatClient(this);
-      cliente.setNomeUsuario(usuario);
+      cliente = new ChatClient(this, usuario);
       t = new Thread(cliente);
       t.start();      
    }
@@ -198,6 +226,7 @@ public class TelaCliente extends javax.swing.JFrame {
    private javax.swing.JPanel jPanel1;
    private javax.swing.JPanel jPanel2;
    private javax.swing.JScrollPane jScrollPane1;
+   public javax.swing.JLabel jlInfo;
    public javax.swing.JTextArea taHistorico;
    private javax.swing.JTextField tfMsg;
    private javax.swing.JTextField tfUsuario;

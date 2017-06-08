@@ -19,12 +19,14 @@ public class TelaServidor extends javax.swing.JFrame {
       jPanel2 = new javax.swing.JPanel();
       btnFecharServidor = new javax.swing.JButton();
       btnIniciarServidor = new javax.swing.JButton();
+      jlIpCliente = new javax.swing.JLabel();
       jScrollPane1 = new javax.swing.JScrollPane();
       taHistorico = new javax.swing.JTextArea();
       tfMsg = new javax.swing.JTextField();
       btnEnviarMsg = new javax.swing.JButton();
 
       setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+      setResizable(false);
 
       jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
       jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -75,18 +77,24 @@ public class TelaServidor extends javax.swing.JFrame {
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
             .addContainerGap()
             .addComponent(btnIniciarServidor, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(btnFecharServidor)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jlIpCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addContainerGap())
       );
       jPanel2Layout.setVerticalGroup(
          jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
          .addGroup(jPanel2Layout.createSequentialGroup()
             .addContainerGap()
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-               .addComponent(btnFecharServidor)
-               .addComponent(btnIniciarServidor))
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+               .addComponent(jlIpCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+               .addGroup(jPanel2Layout.createSequentialGroup()
+                  .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                     .addComponent(btnFecharServidor)
+                     .addComponent(btnIniciarServidor))
+                  .addGap(0, 0, Short.MAX_VALUE)))
+            .addContainerGap())
       );
 
       taHistorico.setEditable(false);
@@ -95,6 +103,11 @@ public class TelaServidor extends javax.swing.JFrame {
       jScrollPane1.setViewportView(taHistorico);
 
       tfMsg.setToolTipText("");
+      tfMsg.addKeyListener(new java.awt.event.KeyAdapter() {
+         public void keyPressed(java.awt.event.KeyEvent evt) {
+            tfMsgKeyPressed(evt);
+         }
+      });
 
       btnEnviarMsg.setText("Enviar");
       btnEnviarMsg.addActionListener(new java.awt.event.ActionListener() {
@@ -115,12 +128,11 @@ public class TelaServidor extends javax.swing.JFrame {
                .addComponent(jScrollPane1)
                .addGroup(layout.createSequentialGroup()
                   .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addGap(30, 30, 30)
-                  .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addGap(0, 43, Short.MAX_VALUE)))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
             .addContainerGap())
          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addContainerGap(247, Short.MAX_VALUE)
             .addComponent(btnEnviarMsg)
             .addGap(206, 206, 206))
       );
@@ -153,7 +165,6 @@ public class TelaServidor extends javax.swing.JFrame {
    }//GEN-LAST:event_btnIniciarServidorActionPerformed
 
    private void btnFecharServidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFecharServidorActionPerformed
-      System.exit(0);
       tfUsuario.setEnabled(true);
       btnIniciarServidor.setEnabled(true);
       btnFecharServidor.setEnabled(false);
@@ -162,14 +173,29 @@ public class TelaServidor extends javax.swing.JFrame {
 
    private void btnEnviarMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEnviarMsgActionPerformed
       String msg = tfMsg.getText();
+      msg = msg.trim();
+      if(msg.length()==0){
+         return;
+      }
       server.enviarMsg(msg);
       tfMsg.setText("");
    }//GEN-LAST:event_btnEnviarMsgActionPerformed
 
+    private void tfMsgKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfMsgKeyPressed
+      if(evt.getKeyChar()=='\n'){
+         String msg = tfMsg.getText();
+         msg = msg.trim();
+         if(msg.length()==0){
+            return;
+         }
+         server.enviarMsg(msg);
+         tfMsg.setText("");
+      }
+    }//GEN-LAST:event_tfMsgKeyPressed
+
    
    private void iniciarServidor(){
-      server = new ChatServer(this);
-      server.setNomeUsuario(usuario);
+      server = new ChatServer(this, usuario);
       t = new Thread(server);
       t.start();      
    }
@@ -198,6 +224,7 @@ public class TelaServidor extends javax.swing.JFrame {
    private javax.swing.JPanel jPanel1;
    private javax.swing.JPanel jPanel2;
    private javax.swing.JScrollPane jScrollPane1;
+   public javax.swing.JLabel jlIpCliente;
    public javax.swing.JTextArea taHistorico;
    private javax.swing.JTextField tfMsg;
    private javax.swing.JTextField tfUsuario;

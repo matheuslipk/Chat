@@ -7,42 +7,47 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ChatServer implements Runnable{
-   private String nomeUsuario;
-   private TelaServidor t;
-   Socket cliente;
+   private final String nomeUsuario;
+   private Socket cliente;
+   private ServerSocket servidor;
+   private TelaServidor tela;
    
-   public void setNomeUsuario(String nome){
-      this.nomeUsuario = nome;
+   public ChatServer(TelaServidor tela, String nomeUsuario){
+      this.tela = tela;
+      this.nomeUsuario = nomeUsuario;
+   }
+   
+   public ChatServer(String nomeUsuario){
+      this.nomeUsuario = nomeUsuario;
    }
    
    public String getNomeUsuario(){
       return this.nomeUsuario;
    }
    
-   public ChatServer(TelaServidor t){
-      this.t = t;
-   } 
-   
    @Override
    public void run() {
       try {
-      // Instancia o ServerSocket ouvindo a porta 12345
-      ServerSocket servidor = new ServerSocket(21);
-      System.out.println("Servidor ouvindo a porta 21");
-      t.taHistorico.setText(t.taHistorico.getText()+"Servidor ouvindo a porta 21\n");
-      cliente = servidor.accept();
-      t.taHistorico.setText(t.taHistorico.getText()+"Cliente conectado: " + cliente.getInetAddress().getHostAddress()+"\n");
-     
-      while(true) {        
-         System.out.println("Aguardando msg...");
-         ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
-         String mens = (String)entrada.readObject();
-         t.taHistorico.setText(t.taHistorico.getText()+mens+"\n");        
+         // Instancia o ServerSocket ouvindo a porta 80
+         servidor = new ServerSocket(80);
+         System.out.println("Servidor ouvindo a porta 80");
+         cliente = servidor.accept();
+         if(this.tela!=null){
+            this.tela.jlIpCliente.setText(cliente.getInetAddress().getHostAddress());
+         }
+         
+         while(true) {        
+            ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
+            String msg = (String)entrada.readObject();     
+            System.out.println(msg);
+            if(this.tela!=null){
+               this.tela.taHistorico.setText(this.tela.taHistorico.getText()+msg+"\n");
+            }
 //        cliente.close();
       }  
     }   
     catch(Exception e) {
-       System.out.println("Erro: " + e.getMessage());
+       System.err.println(e.getMessage());
     }  
    }
    
@@ -52,7 +57,9 @@ public class ChatServer implements Runnable{
          saida = new ObjectOutputStream(cliente.getOutputStream());
          saida.flush();
          saida.writeObject(getNomeUsuario() + ": " +msg);
-         t.taHistorico.setText(t.taHistorico.getText() + "Eu: " + msg + "\n");
+         if(this.tela!=null){
+            this.tela.taHistorico.setText(this.tela.taHistorico.getText()+"Eu: "+msg+"\n");
+         }
       } catch (IOException ex) {
          Logger.getLogger(ChatServer.class.getName()).log(Level.SEVERE, null, ex);
       }
