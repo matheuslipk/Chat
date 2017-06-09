@@ -36,8 +36,19 @@ public class Mensagem implements Serializable{
       this.hora = hora;
    }
    
+   public boolean isAutenticacao() {
+      return autenticacao;
+   }
+
+   public void setAutenticacao(boolean autent) {
+      this.autenticacao = autent;
+   }
+   
+   
+   
    private Date hora;
    private String msg;
    private String remetente;
    private String destino;
+   private boolean autenticacao;
 }

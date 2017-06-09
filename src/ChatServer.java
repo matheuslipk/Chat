@@ -1,3 +1,4 @@
+import dao.UsuariosDao;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modell.Usuarios;
 
 public class ChatServer implements Runnable{
    private final String nomeUsuario;
@@ -32,8 +34,8 @@ public class ChatServer implements Runnable{
    public void run() {
       try {
          // Instancia o ServerSocket ouvindo a porta 80
-         servidor = new ServerSocket(80);
-         System.out.println("Servidor ouvindo a porta 80");
+         servidor = new ServerSocket(123);
+         System.out.println("Servidor ouvindo a porta 123");
          cliente = servidor.accept();
          
          if(this.tela!=null){
@@ -45,6 +47,13 @@ public class ChatServer implements Runnable{
          while(true) {        
             ObjectInputStream entrada = new ObjectInputStream(cliente.getInputStream());
             Mensagem msg = (Mensagem)entrada.readObject();     
+            if(msg.isAutenticacao()){
+               System.out.println("Autenticando");
+               Usuarios u = new Usuarios();
+               u.setNick(msg.getRemetente());
+               new UsuariosDao().inserirUsuario(u);
+               continue;
+            }
             System.out.println(msg);
             if(this.tela!=null){
                this.tela.taHistorico.setText(this.tela.taHistorico.getText()+
